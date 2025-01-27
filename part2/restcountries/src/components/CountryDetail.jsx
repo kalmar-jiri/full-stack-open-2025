@@ -1,4 +1,6 @@
-export default function CountryDetail({ country }) {
+import Weather from './Weather';
+
+export default function CountryDetail({ country, onBack }) {
   const formatNumber = number => {
     return new Intl.NumberFormat('en-US', {
       useGrouping: true,
@@ -11,6 +13,7 @@ export default function CountryDetail({ country }) {
 
   return (
     <div>
+      <button onClick={onBack}>←</button>
       <h1>{country.name.common}</h1>
       <p>Official title: {country.name.official}</p>
       <p>Capital: {country.capital}</p>
@@ -21,7 +24,7 @@ export default function CountryDetail({ country }) {
       <strong>Languages:</strong>
       <ul>{country.languages && Object.keys(country.languages).map(lang => <li key={lang}>{country.languages[lang]}</li>)}</ul>
       <img src={country.flags.png} alt={country.flags.alt} />
-      {/* <img src={country.coatOfArms.png} alt={`The coat of arms of ${country.name.common}`} /> */}
+      <Weather country={country} />
     </div>
   );
 }

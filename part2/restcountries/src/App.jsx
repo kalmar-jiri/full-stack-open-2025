@@ -20,9 +20,10 @@ function App() {
 
   return (
     <>
-      Find countries:
+      🔎
       <input value={country} onChange={handleCountryChange} />
-      <CountryList countries={countriesToShow} />
+      <hr />
+      <CountryList countries={countriesToShow} setCountry={setCountry} />
     </>
   );
 }
