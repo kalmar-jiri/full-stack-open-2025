@@ -1,14 +1,6 @@
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
-
-app.use(express.json());
-
-app.get('/', (request, response) => {
-  response.send(`
-    <h1>Phonebook Server</h1>
-    <p>for the list of available data please visit <a href="http://localhost:3001/api/persons">this link</a></p>
-    <p>For the information about phonebook go <a href="http://localhost:3001/info">here</a></p>`);
-});
 
 let persons = [
   {
@@ -33,12 +25,43 @@ let persons = [
   },
 ];
 
+app.use(express.json());
+// app.use(morgan('tiny'));
+
+morgan.token('postContent', req => {
+  if (req.method === 'POST') {
+    return JSON.stringify(req.body);
+  }
+});
+
+app.use(
+  morgan((tokens, req, res) => {
+    return [
+      tokens.method(req, res),
+      tokens.url(req, res),
+      tokens.status(req, res),
+      tokens.res(req, res, 'content-length'),
+      '-',
+      tokens['response-time'](req, res),
+      'ms',
+      tokens.postContent(req, res),
+    ].join(' ');
+  })
+);
+
+app.get('/', (request, response) => {
+  response.send(/*html*/ `
+    <h1>Phonebook Server</h1>
+    <p>for the list of available data please visit <a href="http://localhost:3001/api/persons">this link</a></p>
+    <p>For the information about phonebook go <a href="http://localhost:3001/info">here</a></p>`);
+});
+
 app.get('/api/persons', (request, response) => {
   response.json(persons);
 });
 
 app.get('/info', (request, response) => {
-  response.send(`
+  response.send(/*html*/ `
         <p>Phonebook has info for ${persons.length} people</p>
         <p>${new Date()}</p>
         <a href="http://localhost:3001/">back</a>
@@ -83,5 +106,5 @@ app.post('/api/persons', (request, response) => {
 
 const PORT = 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
