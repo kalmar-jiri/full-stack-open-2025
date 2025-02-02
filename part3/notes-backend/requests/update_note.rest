@@ -1,0 +1,7 @@
+PUT http://localhost:3001/api/notes/679f27a8cd674aef600a0cef
+Content-type: application/json
+
+{
+    "content": "Note sent from the REST Client extension",
+    "important": true
+}
