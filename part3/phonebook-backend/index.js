@@ -9,6 +9,10 @@ app.use(cors());
 app.use(express.static('dist'));
 // app.use(morgan('tiny'));
 
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: 'unknown endpoint' });
+};
+
 const errorHandler = (error, req, res, next) => {
   console.log(error.message);
   if (error.name === 'CastError') {
@@ -38,15 +42,15 @@ app.use(
   })
 );
 
-app.get('/', (request, response) => {
-  response.send(/*html*/ `
+app.get('/', (req, res) => {
+  res.send(/*html*/ `
     <h1>Phonebook Server</h1>
     <p>for the list of available data please visit <a href="http://localhost:3001/api/persons">this link</a></p>
     <p>For the information about phonebook go <a href="http://localhost:3001/info">here</a></p>`);
 });
 
-app.get('/api/persons', (request, response) => {
-  Person.find({}).then(persons => response.json(persons));
+app.get('/api/persons', (req, res) => {
+  Person.find({}).then(persons => res.json(persons));
 });
 
 app.get('/info', (req, res) => {
@@ -63,10 +67,10 @@ app.get('/api/persons/:id', (req, res) => {
   Person.findById(req.params.id).then(returnedPerson => res.json(returnedPerson));
 });
 
-app.delete('/api/persons/:id', (request, response, next) => {
-  Person.findByIdAndDelete(request.params.id)
+app.delete('/api/persons/:id', (req, res, next) => {
+  Person.findByIdAndDelete(req.params.id)
     .then(result => {
-      response.status(204).end();
+      res.status(204).end();
     })
     .catch(error => next(error));
 });
@@ -97,6 +101,7 @@ app.put('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error));
 });
 
+app.use(unknownEndpoint);
 app.use(errorHandler);
 
 const PORT = process.env.PORT;
