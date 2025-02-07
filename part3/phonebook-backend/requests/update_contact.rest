@@ -1,7 +1,7 @@
-PUT http://localhost:3001/api/persons/67a0fcff55a05406b039820b
+PUT http://localhost:3001/api/persons/67a61bcccb2519969b56fff1
 Content-Type: application/json
 
 {
-    "name": "Alfred Borden",
-    "number": "607 627 777"
+    "name": "R",
+    "number": "+420 314 159 265"
 }

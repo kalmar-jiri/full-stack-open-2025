@@ -53,13 +53,23 @@ const App = () => {
         name: newName,
         number: newNumber,
       };
-      phoneService.addContact(newPerson).then(returnedContact => {
-        setPersons(persons.concat(returnedContact));
-        setNewName('');
-        setNewNumber('');
-        setNotification(`Added ${newPerson.name}`);
-        setTimeout(() => setNotification(null), 5000);
-      });
+      phoneService
+        .addContact(newPerson)
+        .then(returnedContact => {
+          setPersons(persons.concat(returnedContact));
+          setNewName('');
+          setNewNumber('');
+          setNotification(`Added ${newPerson.name}`);
+          setTimeout(() => setNotification(null), 5000);
+        })
+        .catch(error => {
+          setNotificationColor('red');
+          setNotification(error.response.data.error);
+          setTimeout(() => {
+            setNotification(null);
+            setNotificationColor('green');
+          }, 5000);
+        });
     }
   };
 

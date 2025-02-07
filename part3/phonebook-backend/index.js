@@ -17,6 +17,8 @@ const errorHandler = (error, req, res, next) => {
   console.log(error.message);
   if (error.name === 'CastError') {
     return res.status(404).send({ error: 'malformatted id' });
+  } else if (error.name === 'ValidationError') {
+    return res.status(400).json({ error: error.message });
   }
   next(error);
 };
@@ -45,8 +47,8 @@ app.use(
 app.get('/', (req, res) => {
   res.send(/*html*/ `
     <h1>Phonebook Server</h1>
-    <p>for the list of available data please visit <a href="http://localhost:3001/api/persons">this link</a></p>
-    <p>For the information about phonebook go <a href="http://localhost:3001/info">here</a></p>`);
+    <p>for the list of available data please visit <a href="/api/persons">this link</a></p>
+    <p>For the information about phonebook go <a href="/info">here</a></p>`);
 });
 
 app.get('/api/persons', (req, res) => {
@@ -58,7 +60,7 @@ app.get('/info', (req, res) => {
     res.send(/*html*/ `
       <p>Phonebook has info for ${persons.length} people</p>
         <p>${new Date()}</p>
-        <a href="http://localhost:3001/">back</a>
+        <a href="/">back</a>
       `);
   });
 });
@@ -75,7 +77,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error));
 });
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body;
   if (body.name === undefined || body.number === undefined) {
     return response.status(400).json({ error: 'name or number are missing' });
@@ -86,17 +88,16 @@ app.post('/api/persons', (req, res) => {
     number: body.number,
   });
 
-  newPerson.save().then(returnedPerson => res.json(returnedPerson));
+  newPerson
+    .save()
+    .then(returnedPerson => res.json(returnedPerson))
+    .catch(error => next(error));
 });
 
 app.put('/api/persons/:id', (req, res, next) => {
-  const body = req.body;
-  const person = {
-    name: body.name,
-    number: body.number,
-  };
+  const { name, number } = req.body;
 
-  Person.findByIdAndUpdate(req.params.id, person, { new: true })
+  Person.findByIdAndUpdate(req.params.id, { name, number }, { new: true, runValidators: true, context: 'query' })
     .then(updatedPerson => res.json(updatedPerson))
     .catch(error => next(error));
 });
@@ -106,5 +107,5 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
