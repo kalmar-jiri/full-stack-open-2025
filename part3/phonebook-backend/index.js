@@ -72,6 +72,7 @@ app.get('/api/persons/:id', (req, res) => {
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndDelete(req.params.id)
     .then(result => {
+      console.log(`${result.name} was deleted.`);
       res.status(204).end();
     })
     .catch(error => next(error));
@@ -80,7 +81,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 app.post('/api/persons', (req, res, next) => {
   const body = req.body;
   if (body.name === undefined || body.number === undefined) {
-    return response.status(400).json({ error: 'name or number are missing' });
+    return res.status(400).json({ error: 'name or number are missing' });
   }
 
   const newPerson = new Person({
