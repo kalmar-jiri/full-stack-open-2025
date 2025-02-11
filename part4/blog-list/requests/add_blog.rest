@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-    "title": "Paving the way to quantum supercomputers",
-    "author": "University of Oxford",
-    "url": "https://www.sciencedaily.com/releases/2025/02/250205130938.htm",
+    "title": "Always separate app and server files!",
+    "author": "nermineslimane",
+    "url": "https://dev.to/nermine-slimane/always-separate-app-and-server-files--1nc7",
     "likes": 0
 }
