@@ -5,5 +5,5 @@ Content-Type: application/json
     "title": "Always separate app and server files!",
     "author": "nermineslimane",
     "url": "https://dev.to/nermine-slimane/always-separate-app-and-server-files--1nc7",
-    "likes": 0
+    "likes": "hello world"
 }
