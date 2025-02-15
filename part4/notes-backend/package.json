@@ -4,13 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "test": "cross-env NODE_ENV=test node --test",
     "build:ui": "rm -rf dist && cd ../notes-frontend && npm run build && cp -r dist ../notes-backend",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuid",
-    "lint": "eslint .",
-    "test": "node --test"
+    "lint": "eslint ."
   },
   "author": "Jiri Kalmar",
   "license": "ISC",
@@ -23,8 +22,10 @@
   "devDependencies": {
     "@eslint/js": "^9.20.0",
     "@stylistic/eslint-plugin-js": "^3.1.0",
+    "cross-env": "^7.0.3",
     "eslint": "^9.20.0",
     "globals": "^15.14.0",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "supertest": "^7.0.0"
   }
 }
