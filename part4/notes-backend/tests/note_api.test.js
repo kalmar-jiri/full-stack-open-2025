@@ -1,8 +1,20 @@
-const { test, after } = require('node:test');
+const { test, after, beforeEach } = require('node:test');
 const mongoose = require('mongoose');
 const supertest = require('supertest');
 const app = require('../app');
 const assert = require('node:assert');
+const Note = require('../models/note');
+
+const initialNotes = [
+  {
+    content: 'HTML is easy',
+    important: false,
+  },
+  {
+    content: 'Browser can execute only JavaScript',
+    important: true,
+  },
+];
 
 const api = supertest(app);
 test('notes are returned as json', async () => {
@@ -14,15 +26,21 @@ test('notes are returned as json', async () => {
 
 test('there are two notes', async () => {
   const response = await api.get('/api/notes');
-  assert.strictEqual(response.body.length, 2);
+  assert.strictEqual(response.body.length, initialNotes.length);
 });
 
 test('the first note is about HTTP methods', async () => {
   const response = await api.get('/api/notes');
   const contents = response.body.map(e => e.content);
-  console.log(contents);
+  assert(contents.includes('HTML is easy'));
+});
 
-  assert.strictEqual(contents.includes('HTML is easy'), true);
+beforeEach(async () => {
+  await Note.deleteMany({});
+  let noteObject = new Note(initialNotes[0]);
+  await noteObject.save();
+  noteObject = new Note(initialNotes[1]);
+  await noteObject.save();
 });
 
 after(async () => {
