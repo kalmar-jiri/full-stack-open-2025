@@ -6,12 +6,21 @@ const assert = require('node:assert');
 const Note = require('../models/note');
 const helper = require('./test_helper');
 
+// beforeEach(async () => {
+//   await Note.deleteMany({});
+//   let noteObject = new Note(helper.initialNotes[0]);
+//   await noteObject.save();
+//   noteObject = new Note(helper.initialNotes[1]);
+//   await noteObject.save();
+// });
+
 beforeEach(async () => {
   await Note.deleteMany({});
-  let noteObject = new Note(helper.initialNotes[0]);
-  await noteObject.save();
-  noteObject = new Note(helper.initialNotes[1]);
-  await noteObject.save();
+  const noteObjects = helper.initialNotes.map(note => new Note(note));
+  const promiseArray = noteObjects.map(note => note.save());
+  // The Promise.all method can be used for transforming an array of promises into a single promise,
+  // that will be fulfilled once every promise in the array passed to it as an argument is resolved.
+  await Promise.all(promiseArray);
 });
 
 const api = supertest(app);
