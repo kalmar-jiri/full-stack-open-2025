@@ -38,7 +38,7 @@ describe('first initialization of the database', () => {
   });
 });
 
-describe('posting blogs', () => {
+describe('creating blogs', () => {
   test('a valid blog post can be added', async () => {
     const newBlog = {
       title: "Sanderson's First Law",
@@ -76,6 +76,30 @@ describe('posting blogs', () => {
     const blogsAtEnd = await helper.blogsDb();
     const addedBlog = blogsAtEnd.find(b => b.title === newBlog.title);
     assert.strictEqual(addedBlog.likes, 0);
+  });
+
+  test('blog w/ missing title is not saved', async () => {
+    const noTitleBlog = {
+      author: 'Brandon Sanderson',
+      url: 'https://www.brandonsanderson.com/blogs/blog/sandersons-first-law',
+      likes: 0,
+    };
+
+    await api.post('/api/blogs').send(noTitleBlog).expect(400);
+    const blogsAtEnd = helper.blogsDb();
+    assert.strictEqual((await blogsAtEnd).length, helper.initialBlogs.length);
+  });
+
+  test('blog w/ missing url is not saved', async () => {
+    const noUrlBlog = {
+      title: "Sanderson's First Law",
+      author: 'Brandon Sanderson',
+      likes: 0,
+    };
+
+    await api.post('/api/blogs').send(noUrlBlog).expect(400);
+    const blogsAtEnd = helper.blogsDb();
+    assert.strictEqual((await blogsAtEnd).length, helper.initialBlogs.length);
   });
 });
 
