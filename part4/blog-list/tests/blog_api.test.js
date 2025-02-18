@@ -28,7 +28,7 @@ describe('first initialization of the database', () => {
     assert.strictEqual(response.body.length, helper.initialBlogs.length);
   });
 
-  test('the unique identifier is called "id"', async () => {
+  test("the unique identifier is called 'id'", async () => {
     const blogsAtStart = await helper.blogsDb();
     const specificBlog = blogsAtStart[0];
     await api
@@ -38,7 +38,7 @@ describe('first initialization of the database', () => {
   });
 });
 
-describe('specific blogs', () => {
+describe('posting blogs', () => {
   test('a valid blog post can be added', async () => {
     const newBlog = {
       title: "Sanderson's First Law",
@@ -58,6 +58,24 @@ describe('specific blogs', () => {
 
     const contents = blogsAtEnd.map(b => b.content);
     assert(contents.includes(newBlog.content));
+  });
+
+  test("if 'likes' property is missing, default is 0", async () => {
+    const newBlog = {
+      title: "Sanderson's First Law",
+      author: 'Brandon Sanderson',
+      url: 'https://www.brandonsanderson.com/blogs/blog/sandersons-first-law',
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const blogsAtEnd = await helper.blogsDb();
+    const addedBlog = blogsAtEnd.find(b => b.title === newBlog.title);
+    assert.strictEqual(addedBlog.likes, 0);
   });
 });
 
