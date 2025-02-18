@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-    "title": "Always separate app and server files!",
-    "author": "nermineslimane",
-    "url": "https://dev.to/nermine-slimane/always-separate-app-and-server-files--1nc7",
-    "likes": "hello world"
+    "title": "Hawking radiation",
+    "author": "Wikipedia",
+    "url": "https://en.wikipedia.org/wiki/Hawking_radiation",
+    "likes": 0
 }
