@@ -103,6 +103,29 @@ describe('creating blogs', () => {
   });
 });
 
+describe('deleting blogs', () => {
+  test('blog w/ valid id is deleted', async () => {
+    const blogsAtStart = await helper.blogsDb();
+    const toDelete = blogsAtStart[0];
+
+    await api.delete(`/api/blogs/${toDelete.id}`).expect(204);
+    const blogsAtEnd = await helper.blogsDb();
+    const ids = blogsAtEnd.map(b => b.id);
+    assert(!ids.includes(toDelete.id));
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1);
+  });
+
+  test('valid but non-existing id returns 404', async () => {
+    const nonExistingId = await helper.nonExistingId();
+    await api.delete(`/api/blogs/${nonExistingId}`).expect(404);
+  });
+
+  test('invalid id returns 400', async () => {
+    const invalidId = '59a1256saasd56a4sd65321a';
+    await api.delete(`/api/blogs/${invalidId}`).expect(400);
+  });
+});
+
 after(async () => {
   await mongoose.connection.close();
 });

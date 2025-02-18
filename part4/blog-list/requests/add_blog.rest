@@ -2,7 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-    "author": "Wikipedia",
-    "url": "https://en.wikipedia.org/wiki/Hawking_radiation",
+    "title": "Seznam",
+    "author": "Something",
+    "url": "https://www.seznam.cz",
     "likes": 0
 }
