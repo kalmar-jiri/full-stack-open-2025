@@ -126,6 +126,56 @@ describe('deleting blogs', () => {
   });
 });
 
+describe('updating blogs', () => {
+  test('updating valid blog succeeds', async () => {
+    const blogsAtStart = await helper.blogsDb();
+    const toUpdate = blogsAtStart[0];
+
+    // // Either only update the relevant property
+    // const newBlog = {
+    //   likes: 31415,
+    // };
+
+    // Or copy the whole object
+    const newBlog = {
+      title: toUpdate.title,
+      author: toUpdate.author,
+      url: toUpdate.url,
+      likes: 31415,
+    };
+
+    await api
+      .put(`/api/blogs/${toUpdate.id}`)
+      .send(newBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    const blogsAtEnd = await helper.blogsDb();
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length);
+
+    const likes = blogsAtEnd.map(b => b.likes);
+    assert(likes.includes(newBlog.likes));
+  });
+
+  test('non-existing id returns 404', async () => {
+    const newBlog = {
+      title: 'NEW TITLE',
+    };
+
+    const nonExistingId = await helper.nonExistingId();
+    await api.put(`/api/blogs/${nonExistingId}`).send(newBlog).expect(404);
+  });
+
+  test('invalid id format returns 400', async () => {
+    const newBlog = {
+      title: 'NEW TITLE',
+    };
+
+    const nonExistingId = '123456789abc';
+    await api.put(`/api/blogs/${nonExistingId}`).send(newBlog).expect(400);
+  });
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
