@@ -7,6 +7,7 @@ const blogRouter = require('./controllers/blogRouter');
 const logger = require('./utils/logger');
 const middleware = require('./utils/middleware');
 const userRouter = require('./controllers/users');
+const loginRouter = require('./controllers/login');
 
 mongoose.set('strictQuery', false);
 mongoose
@@ -23,6 +24,7 @@ app.use(express.json());
 
 app.use('/api/blogs', blogRouter);
 app.use('/api/users', userRouter);
+app.use('/api/login', loginRouter);
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 
