@@ -11,8 +11,8 @@ const api = supertest(app);
 beforeEach(async () => {
   await Blog.deleteMany({});
   const blogObjects = helper.initialBlogs.map(blog => new Blog(blog));
-  const promiseArray = blogObjects.map(blog => blog.save());
-  await Promise.all(promiseArray);
+  const promiseArrayBlogs = blogObjects.map(blog => blog.save());
+  await Promise.all(promiseArrayBlogs);
 });
 
 describe('first initialization of the database', () => {
@@ -29,7 +29,7 @@ describe('first initialization of the database', () => {
   });
 
   test("the unique identifier is called 'id'", async () => {
-    const blogsAtStart = await helper.blogsDb();
+    const blogsAtStart = await helper.blogsInDb();
     const specificBlog = blogsAtStart[0];
     await api
       .get(`/api/blogs/${specificBlog.id}`)
@@ -53,7 +53,7 @@ describe('creating blogs', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
-    const blogsAtEnd = await helper.blogsDb();
+    const blogsAtEnd = await helper.blogsInDb();
     assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1);
 
     const contents = blogsAtEnd.map(b => b.content);
@@ -73,7 +73,7 @@ describe('creating blogs', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
-    const blogsAtEnd = await helper.blogsDb();
+    const blogsAtEnd = await helper.blogsInDb();
     const addedBlog = blogsAtEnd.find(b => b.title === newBlog.title);
     assert.strictEqual(addedBlog.likes, 0);
   });
@@ -86,7 +86,7 @@ describe('creating blogs', () => {
     };
 
     await api.post('/api/blogs').send(noTitleBlog).expect(400);
-    const blogsAtEnd = helper.blogsDb();
+    const blogsAtEnd = helper.blogsInDb();
     assert.strictEqual((await blogsAtEnd).length, helper.initialBlogs.length);
   });
 
@@ -98,18 +98,18 @@ describe('creating blogs', () => {
     };
 
     await api.post('/api/blogs').send(noUrlBlog).expect(400);
-    const blogsAtEnd = helper.blogsDb();
+    const blogsAtEnd = helper.blogsInDb();
     assert.strictEqual((await blogsAtEnd).length, helper.initialBlogs.length);
   });
 });
 
 describe('deleting blogs', () => {
   test('blog w/ valid id is deleted', async () => {
-    const blogsAtStart = await helper.blogsDb();
+    const blogsAtStart = await helper.blogsInDb();
     const toDelete = blogsAtStart[0];
 
     await api.delete(`/api/blogs/${toDelete.id}`).expect(204);
-    const blogsAtEnd = await helper.blogsDb();
+    const blogsAtEnd = await helper.blogsInDb();
     const ids = blogsAtEnd.map(b => b.id);
     assert(!ids.includes(toDelete.id));
     assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1);
@@ -128,7 +128,7 @@ describe('deleting blogs', () => {
 
 describe('updating blogs', () => {
   test('updating valid blog succeeds', async () => {
-    const blogsAtStart = await helper.blogsDb();
+    const blogsAtStart = await helper.blogsInDb();
     const toUpdate = blogsAtStart[0];
 
     // // Either only update the relevant property
@@ -150,7 +150,7 @@ describe('updating blogs', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/);
 
-    const blogsAtEnd = await helper.blogsDb();
+    const blogsAtEnd = await helper.blogsInDb();
     assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length);
 
     const likes = blogsAtEnd.map(b => b.likes);
@@ -174,8 +174,4 @@ describe('updating blogs', () => {
     const nonExistingId = '123456789abc';
     await api.put(`/api/blogs/${nonExistingId}`).send(newBlog).expect(400);
   });
-});
-
-after(async () => {
-  await mongoose.connection.close();
 });
